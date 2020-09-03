@@ -1,48 +1,12 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
-
-@JJaciel
-JJaciel
-  /
-  oowlish - dashboard
-Private
-1
-00
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-Settings
-oowlish - dashboard / src / dashboard / components / cityCustomers.jsx
-@JacielVillalobos
-JacielVillalobos pre eject
-Latest commit 2f9fd78 18 days ago
-History
-1 contributor
-102 lines(92 sloc)  3.44 KB
-
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import PersonIcon from '@material-ui/icons/Person';
-import Typography from '@material-ui/core/Typography';
-import SvgIcon from '@material-ui/core/SvgIcon';
-import Grid from '@material-ui/core/Grid';
-import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
-import EmailSharpIcon from '@material-ui/icons/EmailSharp';
-import BusinessIcon from '@material-ui/icons/Business';
 import Pagination from '@material-ui/lab/Pagination';
 
 const useStyles = makeStyles(theme => ({
@@ -50,21 +14,12 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.secondary.main,
   },
-  customerInfoContainer: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
-  },
-  fieldIcon: {
-    display: 'flex'
-  },
-  iconWrapper: {
-    marginRight: theme.spacing(1)
-  },
   listContainer: {
-    maxWidth: 400
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
   },
   pagerContainer: {
     marginTop: theme.spacing(2),
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center'
   },
@@ -73,52 +28,43 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function PeopleList({ people }) {
+function PeopleList({ people, pager }) {
   const classes = useStyles();
   const [page, setPage] = useState(1);
 
-  const paginatedCustomers = useMemo(() => {
-    const pCustomers = [];
+  const pagedPeople = useMemo(() => {
+    const pagedPeople = [];
 
-    for (let i = 0; i < customers.length; i += 5) {
-      pCustomers.push(customers.slice(i, i + 5))
+    if (!people)
+      return pagedPeople;
+
+    for (let i = 0; i < people.length; i += 9) {
+      pagedPeople.push(people.slice(i, i + 9))
     }
-    return pCustomers;
-  }, [customers]);
+
+    return pagedPeople;
+  }, [people]);
 
 
-  if (!paginatedCustomers.length)
+  if (!pagedPeople.length)
     return null;
 
   return (
     <div>
       <List className={classes.listContainer}>
-        {paginatedCustomers[(page - 1)].map((cust) => (
-          <ListItem button onClick={() => onCustomerSelect(cust.id)} key={cust.id}>
+        {pagedPeople[(page - 1)].map((person, idx) => (
+          <ListItem dense divider button key={idx} style={{ pointerEvents: 'none' }}>
             <ListItemAvatar>
               <Avatar variant='circle' className={classes.avatar}>
                 <PersonIcon />
               </Avatar>
             </ListItemAvatar>
-            <Grid container className={classes.customerInfoContainer}>
-              <Grid item xs={12} className={classes.fieldIcon}>
-                <SvgIcon fontSize="small" color="primary" component={EmojiPeopleIcon} className={classes.iconWrapper} />
-                <Typography noWrap variant="body2" >{`${cust.firstName} ${cust.lastName}`}</Typography>
-              </Grid>
-              <Grid item xs={12} className={classes.fieldIcon}>
-                <SvgIcon fontSize="small" color="primary" component={EmailSharpIcon} className={classes.iconWrapper} />
-                <Typography noWrap variant="body2" >{`${cust.email}`}</Typography>
-              </Grid>
-              <Grid item xs={12} className={classes.fieldIcon}>
-                <SvgIcon fontSize="small" color="primary" component={BusinessIcon} className={classes.iconWrapper} />
-                <Typography noWrap variant="body2" >{`${cust.company}`}</Typography>
-              </Grid>
-            </Grid>
+            <ListItemText primary={`${person.name} - ${person.email}`} secondary={person.jobTitle} />
           </ListItem>
         ))}
       </List>
       <div className={classes.pagerContainer}>
-        <Pagination color="secondary" count={paginatedCustomers.length} page={page} onChange={(evt, val) => setPage(val)} className={classes.pager} />
+        <Pagination color="secondary" count={pagedPeople.length} page={page} onChange={(evt, val) => setPage(val)} className={classes.pager} />
       </div>
 
     </div>
@@ -126,8 +72,8 @@ function PeopleList({ people }) {
 }
 
 PeopleList.propTypes = {
-  customers: PropTypes.array,
-  onCustomerSelect: PropTypes.func.isRequired,
+  people: PropTypes.array,
+  pager: PropTypes.object,
 };
 
 export default PeopleList;
