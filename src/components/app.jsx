@@ -1,12 +1,22 @@
 import React from 'react';
+import { Switch, Route, Redirect } from "react-router-dom";
 
-console.log(process.env);
+import PeopleDashboard from './subcomponents/peopleDashboard.jsx';
+import Forbidden from './subcomponents/forbidden.jsx';
 
 function App() {
   return (
-    <div >
-      hi
-    </div>
+    <Switch>
+      <Route exact path={'/'}>
+        <Redirect to={'/people'} />
+      </Route>
+      <Route exact path={'/people'}>
+        <PeopleDashboard />
+      </Route>
+      <Route path={'*'}>
+        <Forbidden />
+      </Route>
+    </Switch>
   );
 }
 
