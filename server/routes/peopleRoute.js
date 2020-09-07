@@ -4,6 +4,7 @@ const { PeopleController } = require('../controllers')
 
 const router = express.Router()
 
-router.get('/all', PeopleController.peopleGetAll)
+router.get('/people/pages', PeopleController.peopleGetByPage);
+router.get('/people/all', PeopleController.peopleGetAll);
 
 module.exports = router

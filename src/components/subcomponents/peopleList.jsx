@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -28,32 +28,26 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function PeopleList({ people, pager }) {
+function PeopleList({ people, paging, onSelect }) {
   const classes = useStyles();
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState();
 
-  const pagedPeople = useMemo(() => {
-    const pagedPeople = [];
+  const onPageSelet = useCallback(async (page) => {
+    setLoading(true);
+    await onSelect(page);
+    setPage(page);
+    setLoading(false);
+  }, [onSelect]);
 
-    if (!people)
-      return pagedPeople;
-
-    for (let i = 0; i < people.length; i += 9) {
-      pagedPeople.push(people.slice(i, i + 9))
-    }
-
-    return pagedPeople;
-  }, [people]);
-
-
-  if (!pagedPeople.length)
+  if (!people || !paging)
     return null;
 
   return (
     <div>
       <List className={classes.listContainer}>
-        {pagedPeople[(page - 1)].map((person, idx) => (
-          <ListItem dense divider button key={idx} style={{ pointerEvents: 'none' }}>
+        {people && people.map((person) => (
+          <ListItem dense divider button key={person.id} style={{ pointerEvents: 'none' }}>
             <ListItemAvatar>
               <Avatar variant='circle' className={classes.avatar}>
                 <PersonIcon />
@@ -64,7 +58,15 @@ function PeopleList({ people, pager }) {
         ))}
       </List>
       <div className={classes.pagerContainer}>
-        <Pagination color="secondary" count={pagedPeople.length} page={page} onChange={(evt, val) => setPage(val)} className={classes.pager} />
+        <Pagination 
+          disabled={!!loading}
+          color="secondary" 
+          count={paging.pages} 
+          page={page} 
+          siblingCount={1} 
+          boundaryCount={2}
+          onChange={(evt, val) => onPageSelet(val)} 
+          className={classes.pager} />
       </div>
 
     </div>
@@ -73,7 +75,8 @@ function PeopleList({ people, pager }) {
 
 PeopleList.propTypes = {
   people: PropTypes.array,
-  pager: PropTypes.object,
+  paging: PropTypes.object,
+  onSelect: PropTypes.func
 };
 
 export default PeopleList;

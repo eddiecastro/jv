@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import axios from 'axios';
 
 import PeopleList from './peopleList.jsx';
 import DivSize from './divSize.jsx';
+import Loader from './loader.jsx';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,44 +13,51 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const getPagerInitialValues = () => ({
-  page: 1,
-  perPage: 50
-});
-
-export default function PeopleDashboard() {
+function PeopleDashboard() {
   const classes = useStyles();
+  const [size, setSize] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [people, setPeople] = useState(null);
   const [paging, setPaging] = useState(null);
-  const [pager, setPager] = useState(getPagerInitialValues());
-  const [size, setSize] = useState(0);
+  
+  const fetchPeopleByPage = useCallback(async (page, perPage = 9) => {
+    const result = await axios({ url: 'people/pages', params: { page, perPage } });
+    console.log(result);
+    const { data: { people, paging } } = result;
+    setPeople(people);
+    setPaging({
+      pages: paging.paging.total_pages || 1,
+    })
+  }, []);
 
-  const fetchPeople = useCallback(async () => {
-    axios({ url: 'people/all', params: { ...pager } })
-      .then(({ data: { data, paging } }) => {
-        setPeople(data);
-        setPaging(paging);
-      })
-      .catch(error => console.log(error))
-      .then(kk => console.log(kk));
-
-  }, [pager]);
+  const fetchFirstPage = useCallback(async () => {
+    try {
+      setLoading(true);
+      await fetchPeopleByPage(1);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [fetchPeopleByPage])
 
   useEffect(() => {
-    fetchPeople();
-  }, [fetchPeople]);
+    fetchFirstPage()
+  }, [fetchFirstPage]);
 
-  const handleResize = useCallback((newSize) => setSize(newSize), [])
+  const handleResize = useCallback((newSize) => setSize(newSize), []);
+
+  if (loading)
+    return <Loader load={loading} backdrop={true} />;
 
   return (
     <div className={classes.root}>
       <main>
         <Container>
-          <DivSize onSize={handleResize}>
+          <DivSize onSize={nZ => handleResize(nZ)}>
             <div>
               {size}
             </div>
-            <PeopleList people={people} pager={pager} />
+            <PeopleList people={people} paging={paging} onSelect={(page) => fetchPeopleByPage(page)} />
           </DivSize>
         </Container>
       </main>
@@ -57,3 +65,5 @@ export default function PeopleDashboard() {
 
   );
 }
+
+export default PeopleDashboard;

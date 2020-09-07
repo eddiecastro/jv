@@ -26,8 +26,7 @@ if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
   });
 }
 
-app.use('/people', PeopleRouter);
-// app.use('*', DefaultRouter);
+app.use(PeopleRouter);
 app.use((req, res, next) => {
   var err = new Error('Not Found');
   err.status = 404;
@@ -53,5 +52,4 @@ async function startServer() {
   });
 }
 
-// Run the async function to start our server
 startServer();

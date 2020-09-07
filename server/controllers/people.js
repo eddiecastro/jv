@@ -1,10 +1,12 @@
 const { fetchPeople } = require('../dataAccess');
 
-async function peopleGetAll(req, res) {
+async function peopleGetByPage(req, res) {
   try {
-    const params = { ...req.query };
-    const { data, metadata: { paging } } = await fetchPeople(params);
-    console.log(data[0]);
+
+    const { page, perPage } = req.query;
+
+    const { data, metadata: paging } = await fetchPeople({ page, perPage });
+
     const response = data.map((person) => {
       return {
         id: person.id,
@@ -13,14 +15,37 @@ async function peopleGetAll(req, res) {
         jobTitle: person.title
       }
     });
-    
-    res.json({ data: response, paging });
+
+    res.json({ people: response, paging });
+  } catch (e) {
+    console.log(`err on service => ${e}`);
+  }
+}
+
+async function peopleGetAll(req, res) {
+  try {
+
+    const { page, perPage } = req.query;
+
+    const { data, metadata: paging } = await fetchPeople({ page, perPage });
+
+    const response = data.map((person) => {
+      return {
+        id: person.id,
+        name: person.display_name,
+        email: person.email_address,
+        jobTitle: person.title
+      }
+    });
+
+    res.json({ people: response, paging });
   } catch (e) {
     console.log(`err on service => ${e}`);
   }
 }
 
 module.exports = {
+  peopleGetByPage,
   peopleGetAll
 };
 
