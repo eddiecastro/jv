@@ -47,13 +47,17 @@ function PeopleList({ people, paging, onSelect }) {
     <div>
       <List className={classes.listContainer}>
         {people && people.map((person) => (
-          <ListItem dense divider button key={person.id} style={{ pointerEvents: 'none' }}>
+          <ListItem dense divider button key={person.id} >
             <ListItemAvatar>
               <Avatar variant='circle' className={classes.avatar}>
                 <PersonIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={`${person.name} - ${person.email}`} secondary={person.jobTitle} />
+            <ListItemText 
+              primary={`${person.name} - ${person.email}`} 
+              primaryTypographyProps={{ noWrap: true }} 
+              secondary={person.jobTitle} 
+              secondaryTypographyProps={{ noWrap: true }} />
           </ListItem>
         ))}
       </List>

@@ -1,5 +1,4 @@
 import React from "react";
-import { observer } from 'mobx-react';
 import clsx from "clsx";
 import PropTypes from 'prop-types';
 import { makeStyles } from "@material-ui/core/styles";
@@ -43,4 +42,4 @@ Loader.propTypes = {
   backdrop: PropTypes.bool
 };
 
-export default observer(Loader);
+export default Loader;
