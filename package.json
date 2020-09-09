@@ -2,7 +2,7 @@
   "name": "salesloft-proj",
   "version": "1.0.0",
   "private": true,
-  "proxy": "http://localhost:4000",
+  "proxy": "http://localhost:4000/",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -31,6 +31,7 @@
   "scripts": {
     "start": "concurrently \"npm run start:server\" \"npm run start:client\" --kill-others",
     "build": "node ./buildScript",
+    "server:prd": "cross-env NODE_ENV=production nodemon server/server.js --watch server/*",
     "start:server": "cross-env NODE_ENV=development nodemon server/server.js --watch server/*",
     "start:client": "react-scripts start",
     "build:client": "react-scripts build",

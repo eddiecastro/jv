@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
@@ -20,13 +21,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+
+app.use(PeopleRouter);
+
 if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+  app.use(express.static(path.join(__dirname, 'build')));
+
   app.get('*', (req, res) => {
-    res.sendFile('build/index.html', { root: __dirname });
+    res.sendFile(path.join(__dirname + '/build', 'index.html'));
   });
 }
 
-app.use(PeopleRouter);
 app.use((req, res, next) => {
   var err = new Error('Not Found');
   err.status = 404;

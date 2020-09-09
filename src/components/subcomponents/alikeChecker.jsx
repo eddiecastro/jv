@@ -13,8 +13,10 @@ import Grid from '@material-ui/core/Grid';
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(2),
-    margin: 'auto',
-    maxWidth: 400,
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(1),
+    },
+    maxHeight: 400,
   },
   container: {
     display: 'flex',
@@ -25,16 +27,13 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: 'auto'
   },
-  alikePair: {
-    border: 1
-  },
   loadingContainer: {
     width: '100%',
     height: theme.spacing(4)
   },
-  loading: {
-    minWidth: '100%'
-  },
+  duplicatedItem: {
+    maxWidth: 180
+  }
 }));
 
 function AlikeChecker({ data, onCheck }) {
@@ -55,6 +54,7 @@ function AlikeChecker({ data, onCheck }) {
     const calcDist = (a, b) => leven(a, b);
 
     for (let i = 0; i < data.length; i++) {
+      const likeness = .90
       for (let j = 0; j < data.length; j++) {
         if (checked.find(v => v === data[j]['id']))
           continue;
@@ -62,7 +62,7 @@ function AlikeChecker({ data, onCheck }) {
           continue;
         const similarity = calcSimilarity(data[i]['email'], data[j]['email']);
 
-        if (similarity > .90) {
+        if (similarity > likeness) {
           alike.push({ a: data[i], b: data[j], s: similarity });
         }
       }
@@ -91,22 +91,31 @@ function AlikeChecker({ data, onCheck }) {
 
 
   return (
-    <Paper className={classes.root} variant="outlined" square >
+    <Paper elevation={3} className={classes.root} square >
       {on && alikeItems ?
-        <Grid container direction="column" >
+        <Grid container direction="column">
+          <Typography variant="body1" align="center" >Possible duplicated people</Typography>
           {alikeItems.length ?
             alikeItems.map((person, idx) => {
               const { a, b } = person;
               return (
-                <Grid key={idx} container direction="row" className={classes.alikePair}>
-                  <Grid item>
+                <Grid key={idx} container direction="row" justify="center" >
+                  <Grid item className={classes.duplicatedItem}>
                     <ListItem dense divider button key={person.id} >
-                      <ListItemText primary={a.name} secondary={a.email} />
+                      <ListItemText 
+                        primary={a.name} 
+                        primaryTypographyProps={{ noWrap: true }} 
+                        secondary={a.email} 
+                        secondaryTypographyProps={{ noWrap: true }} />
                     </ListItem>
                   </Grid>
-                  <Grid item>
+                  <Grid item className={classes.duplicatedItem}>
                     <ListItem dense divider button key={person.id} >
-                      <ListItemText primary={b.name} secondary={b.email} />
+                      <ListItemText 
+                        primary={b.name} 
+                        primaryTypographyProps={{ noWrap: true }} 
+                        secondary={b.email} 
+                        secondaryTypographyProps={{ noWrap: true }} />
                     </ListItem>
                   </Grid>
                 </Grid>
@@ -114,9 +123,10 @@ function AlikeChecker({ data, onCheck }) {
             }) : null}
         </Grid> :
         <div className={classes.container} >
-          <Typography variant="body1" >Duplicated people</Typography>
+          <Typography variant="body1" align="center" >Check if there're duplicated records on people</Typography>
+      
           <div className={classes.loadingContainer}>
-            {loading ? <LinearProgress className={classes.loading} /> : null}
+            {loading ? <LinearProgress color="secondary" /> : null}
           </div>
 
           <Button variant="contained" color="secondary" onClick={() => handleClick()} className={classes.button} disabled={!!loading} >Check</Button>

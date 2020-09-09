@@ -16,18 +16,11 @@ import TableRow from '@material-ui/core/TableRow';
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(2),
-    margin: 'auto',
-    maxWidth: 400,
-    maxHeight: 500
-  },  
-  emails: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    '& > *': {
-      margin: theme.spacing(0.5),
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(1),
     },
-  },
+    margin: 'auto',
+  },  
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -41,21 +34,12 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: theme.spacing(4)
   },
-  loading: {
-    minWidth: '100%'
-  },
   tableContainer: {
     maxHeight: 350,
-    maxWidth: 350,
   },
   table: {
-    width: 300,
     overflowY: 'scroll'
   },
-  tableRow: {
-    maxWidth: 100
-  },
-  tableCell: {}
 }));
 
 function CharFreqChecker({ data, onCheck }) {
@@ -105,7 +89,7 @@ function CharFreqChecker({ data, onCheck }) {
   }, [data, countFrequence]);
 
   return (
-    <Paper className={classes.root} variant="outlined" square >
+    <Paper elevation={3} className={classes.root} square >
       {on && freq ? 
         <TableContainer className={classes.tableContainer} >
           <Table className={classes.table} size="small" aria-label="table">
@@ -114,15 +98,15 @@ function CharFreqChecker({ data, onCheck }) {
                 <TableCell colSpan={2} align="center" >Characters frequency</TableCell>
               </TableRow>
               <TableRow className={classes.tableRow}>
-                <TableCell className={classes.tableCell} padding="checkbox">Char</TableCell>
-                <TableCell className={classes.tableCell} padding="checkbox">Count</TableCell>
+                <TableCell padding="checkbox">Character</TableCell>
+                <TableCell padding="checkbox">Count</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {freq.map((char) => (
                 <TableRow key={char[0]}>
-                  <TableCell className={classes.tableCell}component="th" scope="row" >{char[0]}</TableCell>
-                  <TableCell className={classes.tableCell} >{char[1]}</TableCell>
+                  <TableCell component="th" scope="row" >{char[0]}</TableCell>
+                  <TableCell >{char[1]}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -132,7 +116,7 @@ function CharFreqChecker({ data, onCheck }) {
         <div className={classes.container} >
           <Typography variant="body1" align="center" >Characters frequency count over people emails</Typography>
           <div className={classes.loadingContainer}>
-            {loading ? <LinearProgress className={classes.loading} /> : null}
+            {loading ? <LinearProgress color="secondary" /> : null}
           </div>
           
           <Button variant="contained" color="secondary" onClick={() => handleClick()} className={classes.button} disabled={!!loading} >Calculate</Button>
